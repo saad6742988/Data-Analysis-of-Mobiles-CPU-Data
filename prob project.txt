@@ -146,6 +146,19 @@ correspondingValue<-function(companyName,cpuCore,percentile)
   #prob<-pnorm(60,50,10)
   cat("for",companyName,"cpus with", cpuCore, "cores,",value,"corresponds to",percentile,"%")
 }
+#predict Cpu Score if Clock speed is X
+predictScoreUsingClock<-function(clock)
+{
+  correlation = cor(data$clock,data$cpuScore,method = 'pearson')
+  cat('Correlation Between Clock and Cpu Score is',correlation,"\n")
+  #cat('Correlation Between Clock and Cpu Score is',12,"\n")
+  x=data$cpuScore
+  y=data$clock
+  relation<-lm(x~y)
+  a<-data.frame(y = 3230)
+  result<-predict(relation,a)
+  cat(result,'is the predicted Cpu Score if Clock Speed is',clock)
+}
 
 #come important data variables used in functions
 cpuScore_without_outlairs
@@ -158,6 +171,8 @@ cpuScore
 
 
 OrignalDataPlot()
+
+
 #normalize cpuScore
 cpuScore_without_outlairs<-removeOutliers(data$cpuScore)
 #standardized cpu score
@@ -165,51 +180,30 @@ cpuScore_without_outlairs
 cpuScore_standardize<-standardizeData(cpuScore_without_outlairs)
 #plot normal curve of standardized Cpu sccore
 plotNormalCurve(cpuScore_standardize,-3.5,3.5,0.1)
+
+
 #plotting charts
 DisplayComponentBarChart()
 PlotPieChart()
+
+
 #if abc company makes cpu with X cores,what's the probabilty of getting Cpu score less than Y.
 lessProbability('Apple',8,900)
+
+
 #if abc company makes cpu with X cores,what's the probabilty of getting Cpu score greater than Y.
 greaterProbability('Apple',8,1000)
+
+
 #if abc company makes cpu with X cores,what's the probabilty of getting Cpu score between A and B.
+#A should be less then B
 betweenProbability('Apple',8,600,1000)
+
+
 #what value of CPU score corresponds to X% of abc company for Y cores
 correspondingValue('Apple',8,99.99)
 
 
-#temporary codes
-summary(cpuScore_without_outlairs)
-summary(cpuScore_standardize)
-summary(cpuScore)
-hist(cpuScore_without_outlairs)
-xtemp<-seq(0,650,1)
-ytemp<-dnorm(xtemp,mean(cpuScore_without_outlairs),sd(cpuScore_without_outlairs))
-plot(xtemp,ytemp,type='l')
+#predict Cpu Score if Clock speed is X
+predictScoreUsingClock(1900)
 
-
-
-cpuScore_standardize1 <<-((cpuScore  - mean(cpuScore)) / sd(cpuScore))
-cpuScore_standardize1
-summary(cpuScore_standardize1)
-x21<-seq(-3.5,3.5,0.1)
-y21<-dnorm(x21,mean(cpuScore_standardize1),sd(cpuScore_standardize1))
-plot(x21,y21,type='l')
-
-#abc = subset(data$cpuScore, data$company=='Qualcomm' & data$cores==8)
-abc = cpuScore_without_outlairs
-sort(abc)
-q12=quantile(abc,0.25)
-q32=quantile(abc,0.75)
-iqr=IQR(abc)
-lower_limit1=q12-1.5*iqr
-upper_limit1=q32+1.5*iqr
-lower_limit1
-upper_limit1
-#Data without outlairs
-abc_without_outlairs<<-subset(abc, abc>lower_limit1 & abc<upper_limit1)
-sort(abc_without_outlairs)
-
-qnorm(0.1281362,792.8333,169.8604)
-pnorm(8355.146,10000,1000)
- 
