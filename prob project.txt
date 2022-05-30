@@ -102,7 +102,7 @@ lessProbability<-function(companyName,cpuCore,score)
   prob<-pnorm(score,mean(normalData),sd(normalData))
   #prob<-pnorm(60,50,10)
   prob<-prob*100
-  cat("if",companyName,"makes cpu with", cpuCore, "cores,there's",prob,"% chance of getting Cpu score less than",score)
+  cat("if",companyName,"uses cpu with", cpuCore, "cores,there's",prob,"% chance of getting Cpu score less than",score)
 }
 #probability of getting less score greater than X specified by company and cores
 greaterProbability<-function(companyName,cpuCore,score)
@@ -115,8 +115,9 @@ greaterProbability<-function(companyName,cpuCore,score)
   prob<-pnorm(score,mean(normalData),sd(normalData))
   #prob<-pnorm(3.2,3,0.5)
   prob<-1-prob
-  prob<-prob*100
-  cat("if",companyName,"makes cpu with", cpuCore, "cores,there's",prob,"% chance of getting Cpu score less than",score)
+  probPer<-prob*100
+  cat("if",companyName,"uses cpu with", cpuCore, "cores,there's",probPer,"% chance of getting Cpu score greater than",score,"\n")
+  return(prob)
 }
 #probability of getting less score between X and Y specified by company and cores
 betweenProbability<-function(companyName,cpuCore,score1,score2)
@@ -132,7 +133,7 @@ betweenProbability<-function(companyName,cpuCore,score1,score2)
   #prob2<-pnorm(40,30,5)
   prob<-prob2-prob1
   prob<-prob*100
-  cat("if",companyName,"makes cpu with", cpuCore, "cores,there's",prob,"% chance of getting Cpu score between",score1,"and",score2)
+  cat("if",companyName,"uses cpu with", cpuCore, "cores,there's",prob,"% chance of getting Cpu score between",score1,"and",score2)
 }
 #what value of CPU score corresponds to X% of abc company for Y cores
 correspondingValue<-function(companyName,cpuCore,percentile)
@@ -158,6 +159,15 @@ predictScoreUsingClock<-function(clock)
   a<-data.frame(y = 3230)
   result<-predict(relation,a)
   cat(result,'is the predicted Cpu Score if Clock Speed is',clock)
+}
+
+#binomial distribution 
+binomailDistribution<-function(company,cores,score,n,x)
+{
+  probOfSuccess<-greaterProbability(company,cores,score)
+  prob<-pbinom(x,n,probOfSuccess)
+  probPer<-prob*100
+  cat("if",company,"uses",n,"cpu with", cores, "cores,there's",probPer,"% chance that",x,"gives score more than",score)
 }
 
 #come important data variables used in functions
@@ -203,7 +213,10 @@ betweenProbability('Apple',8,600,1000)
 #what value of CPU score corresponds to X% of abc company for Y cores
 correspondingValue('Apple',8,99.99)
 
+#binomial distribution
+binomailDistribution('Apple',8,900,10,2)
 
 #predict Cpu Score if Clock speed is X
 predictScoreUsingClock(1900)
+
 
